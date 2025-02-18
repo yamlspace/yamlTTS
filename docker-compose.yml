@@ -3,7 +3,7 @@ services:
   tts:
     build: .
     ports:
-      - "5000:5000"
+      - "5002:5002"
     volumes:
       - ./models:/root/.local/share/tts
     deploy:
@@ -16,7 +16,7 @@ services:
     environment:
       - NVIDIA_VISIBLE_DEVICES=all
     healthcheck:
-      test: ["CMD", "test", "-f", "/root/.local/share/tts/tts_models--multilingual--multi-dataset--xtts_v2/model_file.pth"]
+      test: ["CMD", "test", "-f", "/root/.local/share/tts/tts_models--multilingual--multi-dataset--xtts_v2/model.pth"]
       interval: 30s
       timeout: 10s
       retries: 3

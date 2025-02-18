@@ -1,46 +1,52 @@
 import os
 import requests
 from tqdm import tqdm
-import hashlib
-import subprocess
+from pathlib import Path
 
 MODELS = {
     "xtts_v2": {
-        "url": "https://huggingface.co/coqui/xtts-v2/resolve/main/model.pth",
-        "sha256": "HASH_OF_MODEL_FILE",
+        "model_name": "tts_models--multilingual--multi-dataset--xtts_v2",
+        "files": {
+            "model.pth": "https://huggingface.co/yamlspace/yamlTTS/resolve/main/model.pth",
+            "config.json": "https://huggingface.co/yamlspace/yamlTTS/resolve/main/config.json",
+            "vocab.json": "https://huggingface.co/yamlspace/yamlTTS/resolve/main/vocab.json",
+            "speakers_xtts.pth": "https://huggingface.co/yamlspace/yamlTTS/resolve/main/speakers_xtts.pth",
+            "dvae.pth": "https://huggingface.co/yamlspace/yamlTTS/resolve/main/dvae.pth",
+            "mel_stats.pth": "https://huggingface.co/yamlspace/yamlTTS/resolve/main/mel_stats.pth"
+        },
         "path": "models/tts_models--multilingual--multi-dataset--xtts_v2"
     }
 }
 
-def download_with_wget(url, dest_path, options=""):
-    cmd = f"wget {options} -O {dest_path} '{url}'"
-    print(f"Downloading with command: {cmd}")
-    subprocess.run(cmd, shell=True, check=True)
-
-def verify_hash(file_path, expected_hash):
-    sha256_hash = hashlib.sha256()
-    with open(file_path, "rb") as f:
-        for byte_block in iter(lambda: f.read(4096), b""):
-            sha256_hash.update(byte_block)
-    return sha256_hash.hexdigest() == expected_hash
+def download_file(url, dest_path):
+    response = requests.get(url, stream=True)
+    total_size = int(response.headers.get('content-length', 0))
+    
+    Path(dest_path).parent.mkdir(parents=True, exist_ok=True)
+    
+    with open(dest_path, 'wb') as file, tqdm(
+        desc=os.path.basename(dest_path),
+        total=total_size,
+        unit='iB',
+        unit_scale=True,
+        unit_divisor=1024,
+    ) as pbar:
+        for data in response.iter_content(chunk_size=1024):
+            size = file.write(data)
+            pbar.update(size)
 
 def main():
-    os.makedirs("models", exist_ok=True)
-    
     for model_name, info in MODELS.items():
-        dest_path = os.path.join(info["path"], "model_file.pth")
-        os.makedirs(os.path.dirname(dest_path), exist_ok=True)
+        print(f"\nDownloading {model_name} files...")
         
-        if not os.path.exists(dest_path):
-            print(f"Downloading {model_name}...")
-            download_with_wget(info["url"], dest_path)
+        for file_name, url in info["files"].items():
+            dest_path = os.path.join(info["path"], file_name)
             
-            if info["sha256"]:
-                print("Verifying download...")
-                if not verify_hash(dest_path, info["sha256"]):
-                    print("Warning: Hash verification failed!")
-        else:
-            print(f"Model {model_name} already exists")
+            if not os.path.exists(dest_path):
+                print(f"Downloading {file_name}...")
+                download_file(url, dest_path)
+            else:
+                print(f"{file_name} already exists, skipping...")
 
 if __name__ == "__main__":
     main() 
