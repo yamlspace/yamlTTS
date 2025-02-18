@@ -4,7 +4,11 @@ services:
     ports:
       - "5002:5002"
     volumes:
-      - ./models:/root/.local/share/tts
+      - ./models:/root/.local/share/tts/tts_models
+    command: >
+      /app/.venv/bin/python -m TTS.server.server 
+      --model_path /root/.local/share/tts/tts_models/tts_models--multilingual--multi-dataset--xtts_v2/model.pth 
+      --config_path /root/.local/share/tts/tts_models/tts_models--multilingual--multi-dataset--xtts_v2/config.json
     deploy:
       resources:
         reservations:
@@ -15,7 +19,7 @@ services:
     environment:
       - NVIDIA_VISIBLE_DEVICES=all
     healthcheck:
-      test: ["CMD", "test", "-f", "/root/.local/share/tts/tts_models--multilingual--multi-dataset--xtts_v2/model.pth"]
+      test: ["CMD", "curl", "-f", "http://localhost:5002/health"]
       interval: 30s
       timeout: 10s
       retries: 3
