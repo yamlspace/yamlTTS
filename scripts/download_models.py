@@ -2,32 +2,20 @@ import os
 import requests
 from tqdm import tqdm
 import hashlib
+import subprocess
 
 MODELS = {
     "xtts_v2": {
-        "url": "https://huggingface.co/coqui/xtts-v2/resolve/main/model.pth",  # Example
-        # Or use other stable hosting:
-        # - Hugging Face
-        # - AWS S3
-        # - Google Cloud Storage
+        "url": "https://huggingface.co/coqui/xtts-v2/resolve/main/model.pth",
         "sha256": "HASH_OF_MODEL_FILE",
         "path": "models/tts_models--multilingual--multi-dataset--xtts_v2"
     }
 }
 
-def download_file(url, dest_path):
-    response = requests.get(url, stream=True)
-    total_size = int(response.headers.get('content-length', 0))
-    
-    with open(dest_path, 'wb') as f, tqdm(
-        desc=os.path.basename(dest_path),
-        total=total_size,
-        unit='iB',
-        unit_scale=True
-    ) as pbar:
-        for data in response.iter_content(chunk_size=1024):
-            size = f.write(data)
-            pbar.update(size)
+def download_with_wget(url, dest_path, options=""):
+    cmd = f"wget {options} -O {dest_path} '{url}'"
+    print(f"Downloading with command: {cmd}")
+    subprocess.run(cmd, shell=True, check=True)
 
 def verify_hash(file_path, expected_hash):
     sha256_hash = hashlib.sha256()
@@ -45,7 +33,7 @@ def main():
         
         if not os.path.exists(dest_path):
             print(f"Downloading {model_name}...")
-            download_file(info["url"], dest_path)
+            download_with_wget(info["url"], dest_path)
             
             if info["sha256"]:
                 print("Verifying download...")

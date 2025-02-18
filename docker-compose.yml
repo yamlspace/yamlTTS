@@ -1,0 +1,23 @@
+version: '3.8'
+services:
+  tts:
+    build: .
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./models:/root/.local/share/tts
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+    healthcheck:
+      test: ["CMD", "test", "-f", "/root/.local/share/tts/tts_models--multilingual--multi-dataset--xtts_v2/model_file.pth"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s 
