@@ -7,12 +7,12 @@ MODELS = {
     "xtts_v2": {
         "model_name": "tts_models--multilingual--multi-dataset--xtts_v2",
         "files": {
-            "model.pth": "https://huggingface.co/yamlspace/yamlTTS/resolve/main/model.pth",
-            "config.json": "https://huggingface.co/yamlspace/yamlTTS/resolve/main/config.json",
-            "vocab.json": "https://huggingface.co/yamlspace/yamlTTS/resolve/main/vocab.json",
-            "speakers_xtts.pth": "https://huggingface.co/yamlspace/yamlTTS/resolve/main/speakers_xtts.pth",
-            "dvae.pth": "https://huggingface.co/yamlspace/yamlTTS/resolve/main/dvae.pth",
-            "mel_stats.pth": "https://huggingface.co/yamlspace/yamlTTS/resolve/main/mel_stats.pth"
+            "model.pth": "https://huggingface.co/deepbrainspace/TTS/resolve/main/model.pth",
+            "config.json": "https://huggingface.co/deepbrainspace/TTS/resolve/main/config.json",
+            "vocab.json": "https://huggingface.co/deepbrainspace/TTS/resolve/main/vocab.json",
+            "speakers_xtts.pth": "https://huggingface.co/deepbrainspace/TTS/resolve/main/speakers_xtts.pth",
+            "dvae.pth": "https://huggingface.co/deepbrainspace/TTS/resolve/main/dvae.pth",
+            "mel_stats.pth": "https://huggingface.co/deepbrainspace/TTS/resolve/main/mel_stats.pth"
         },
         "path": "models/tts_models--multilingual--multi-dataset--xtts_v2"
     }
